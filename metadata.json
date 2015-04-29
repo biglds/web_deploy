@@ -1,0 +1,29 @@
+{
+  "replacing": {
+  },
+  "conflicting": {
+  },
+  "groupings": {
+  },
+  "long_description": "Description\n===========\n\nRequirements\n============\n\nAttributes\n==========\n\nUsage\n=====\n\n",
+  "attributes": {
+  },
+  "maintainer": "biglds",
+  "license": "All rights reserved",
+  "platforms": {
+  },
+  "description": "Installs/Configures webapp",
+  "version": "3.6.0",
+  "suggestions": {
+  },
+  "recommendations": {
+  },
+  "providing": {
+  },
+  "recipes": {
+  },
+  "dependencies": {
+  },
+  "maintainer_email": "lavorns@gmail.com",
+  "name": "biglds"
+}

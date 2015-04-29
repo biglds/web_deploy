@@ -1,0 +1,188 @@
+<configuration scan="true" scanPeriod="3 seconds"> <!-- debug="true"> -->
+  <!--<jmxConfigurator /> -->
+  <property name="logDirectory" value="${webapp_HOME:-}/logs" />
+  <!--   Example evaluator filter applied against console appender
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="ch.qos.logback.core.filter.EvaluatorFilter">      
+      <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
+        <expression>return true;</expression>
+      </evaluator>
+      <OnMismatch>DENY</OnMismatch>
+      <OnMatch>ACCEPT</OnMatch>
+    </filter> 
+   <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{1024} - %msg%n</pattern>
+    </encoder>
+  </appender> -->
+  
+  
+  <% if !@centralized_logging_node.empty? -%>
+  <!-- Centralized logging Setting -->
+  <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
+        <syslogHost><%=@centralized_logging_node%></syslogHost>
+        <port><%=@centralized_logging_port%></port>
+        <facility>USER</facility>
+		<suffixPattern>%d{HH:mm:ss.SSS} [%thread] %logger %msg</suffixPattern>
+    </appender>
+  <logger name="syslogger" level="INFO" additivity="FALSE">
+        <appender-ref ref="SYSLOG"/>
+  </logger>
+  <% end -%>
+
+ 
+  <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  	  <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+  	  	<level>DEBUG</level>
+  	  </filter>
+  	  <file>${logDirectory}/info_webapp.log</file>
+  	  <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+  	  	<fileNamePattern>${logDirectory}/info_webapp.%i.log.zip</fileNamePattern>
+  	  	<minIndex>1</minIndex>
+  	  	<maxIndex>50</maxIndex>
+  	  </rollingPolicy>
+  	  <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+  	  	<maxFileSize>50MB</maxFileSize>
+  	  </triggeringPolicy>
+  	  <encoder>
+  	  	<pattern>"%d [%thread] %-5level %logger{1024} - %msg%n"</pattern>
+  	  </encoder>
+  </appender>
+  <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+       <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+  	  	<level>ERROR</level>
+  	  </filter>
+  	  <file>${logDirectory}/error_webapp.log</file>
+  	  <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+  	  	<fileNamePattern>${logDirectory}/error_webapp.%i.log.zip</fileNamePattern>
+  	  	<minIndex>1</minIndex>
+  	  	<maxIndex>50</maxIndex>
+  	  </rollingPolicy>
+  	  <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+  	  	<maxFileSize>50MB</maxFileSize>
+  	  </triggeringPolicy>
+  	  <encoder>
+  	  	<pattern>"%d [%thread] %-5level %logger{1024} - %msg%n"</pattern>
+  	  </encoder>
+  </appender>
+  
+  <!-- Example SIFTING appender to do one rolling log per loggerName, for illustration only, requires unsupported 
+       maven artifact commented out of BuildConfig: 'webapp:webapp-logback-ext:0.0.1-SNAPSHOT'
+  <appender name="SIFT_BY_LOGGER" class="ch.qos.logback.classic.sift.SiftingAppender" >
+  	<discriminator class="webapp.logback.ext.LoggerBasedDiscriminator" >
+  		<key>loggerName</key>
+  		<defaultValue>unknown</defaultValue>
+  	</discriminator>
+  	<sift>
+  		<appender name="FILE-${loggerName}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  		    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+  	  			<level>TRACE</level>
+  	  		</filter>
+  			<file>${logDirectory}/${loggerName}.log</file>
+  			<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+  	  			<fileNamePattern>${logDirectory}/${loggerName}.%i.log.zip</fileNamePattern>
+  	  			<minIndex>1</minIndex>
+  	  			<maxIndex>9</maxIndex>
+  	  		</rollingPolicy>
+  	  		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+  	  			<maxFileSize>1MB</maxFileSize>
+  	  		</triggeringPolicy>
+  	  		<encoder>
+  	  			<pattern>"%d{HH:mm:ss.SSS} [%thread] %-5level %logger{1024} - %msg%n"</pattern>
+  	  		</encoder>
+  		</appender>
+  	</sift>
+  </appender> -->
+
+
+  	<!-- Set level for all application artefacts -->
+  	
+	<!-- Grails loggers -->
+	<logger name="grails.app" level="INFO"/>
+	<logger name="grails.app.controller" level="WARN"/>
+	<logger name="grails.app.service" level="WARN"/>
+	<logger name="grails.app.domain" level="WARN"/>
+	<logger name="grails.app.filters" level="WARN"/>
+	<logger name="grails.app.taglib" level="WARN"/>
+	<logger name="org.codehaus.groovy.grails.web" level="WARN"/>
+	<logger name="org.codehaus.groovy.grails.web.mapping" level="WARN"/>
+	<logger name="org.codehaus.groovy.grails.plugins" level="WARN"/>
+	<logger name="org.codehaus.groovy.grails.commons" level="WARN"/>
+	<logger name="org.codehaus.groovy.grails.orm" level="WARN"/>
+	<logger name="org.codehaus.groovy.grails.scaffolding" level="WARN"/>
+	<logger name="org.codehaus.groovy.grails.validation" level="WARN" />
+	<logger name="org.codehaus.groovy.grails.context" level="WARN" />
+	<logger name="org.codehaus.groovy.grails" level="WARN" />
+	<logger name="org.grails.plugin" level="WARN" />
+
+	<!-- Taglibs -->
+	<logger name="grails.app.taglib" level="WARN" />
+	
+	<!-- webapp domain classes -->
+	<logger name="grails.app.domain.webapp" level="WARN" />
+	
+	<!-- webapp Services -->
+	<logger name="grails.app.services.webapp" level="WARN" />
+	<logger name="grails.app.services.webapp.ComputeService" level="WARN" />
+	<logger name="grails.app.services.webapp.LoggingWonderlandService" level="INFO" />
+	
+	<!-- webapp controllers -->
+	<logger name="grails.app.controllers.webapp" level="WARN" />
+
+	<!-- Other loggers -->
+	<logger name="grails.app.controllers.com.piragua.buildinfo" level="WARN" />
+	<logger name="grails.plugin.runtimelogging" level="WARN" />
+	<logger name="grails.plugin.webxml" level="WARN" />
+	<logger name="grails.app.services.JQueryService" level="WARN" />
+	<logger name="grails.app.services.com.att" level="WARN" />
+	<logger name="grails.app.services.org.apache.shiro" level="WARN" />
+	<logger name="grails.app.services.org.grails.plugins.quartz" level="WARN" />
+	<logger name="org.grails.plugins.zkui" level="WARN" />
+	<logger name="grails.spring" level="WARN" />
+	<logger name="ShiroGrailsPlugin" level="WARN" />
+	<logger name="QuartzGrailsPlugin" level="WARN" />
+	<logger name="net.sf" level="WARN" />
+	<logger name="org.apache.commons.httpclient" level="WARN" />
+	<logger name="org.apache.commons" level="WARN" />
+	<logger name="org.apache.shiro" level="WARN" />
+	<logger name="org.apache.catalina" level="WARN" />
+	<logger name="org.apache.tomcat" level="WARN" />
+	<logger name="org.apache.coyote" level="WARN" />
+	<logger name="org.apache.jasper" level="WARN" />
+	<logger name="org.springframework" level="WARN" />
+	<logger name="org.hibernate.SQL" level="WARN" />
+	<logger name="org.hibernate" level="WARN" />
+	<logger name="org.apache.camel" level="WARN" />
+	<logger name="org.quartz" level="WARN" />
+	<logger name="org.zkoss" level="WARN" />
+	<logger name="com.hazelcast" level="WARN" />
+	<logger name="com.att" level="WARN" />
+	<logger name="org.restlet" level="WARN" />
+	<logger name="org.apache.camel.component.restlet" level="WARN" />
+	
+  
+  <!-- change below if you want to see grails deprecation warnings -->
+  <logger name="grails.util.GrailsUtil" level="ERROR" />
+ 
+  <!-- logback internals logging -->
+  <logger name="ch.qos.logback.classic" level="INFO"/>
+  <logger name="ch.qos.logback.core" level="INFO"/>
+  
+  <!-- <logger name="test.1.0" level="DEBUG" /> -->
+
+  <root level="DEBUG">
+    <appender-ref ref="ERROR" />
+    <appender-ref ref="INFO" />
+    
+    <!-- Below commented-out appenders are for illustration only, not active with standard configuration -->
+	<!--<appender-ref ref="SIFT_BY_LOGGER" /> -->
+    <!--<appender-ref ref="STDOUT" /> -->
+ 
+	<% if !@centralized_logging_node.empty? -%>
+	<!-- Centralized logging Setting -->
+	<appender-ref ref="SYSLOG" />
+    <appender-ref ref="STDOUT" />
+	<% end -%>
+
+  </root>
+
+</configuration>
